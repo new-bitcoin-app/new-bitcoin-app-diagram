@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Bitcoin App — Live Module Diagram</title>
+    <meta name="description" content="A polished GitHub Pages demo that renders a Mermaid module diagram from diagram.mmd and auto-refreshes when the source changes." />
+    <style>
+      :root {
+        --bg: #07111f;
+        --bg-2: #0c1830;
+        --panel: rgba(13, 24, 48, 0.82);
+        --panel-border: rgba(124, 167, 255, 0.2);
+        --text: #e8f1ff;
+        --muted: #9db2d4;
+        --cyan: #63d3ff;
+        --green: #53d769;
+        --amber: #ffb84d;
+        --pink: #ff6fae;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(99, 211, 255, 0.18), transparent 28%),
+          radial-gradient(circle at top right, rgba(255, 111, 174, 0.14), transparent 24%),
+          linear-gradient(180deg, var(--bg) 0%, #040a13 100%);
+      }
+
+      .page {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 40px 24px 56px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 20px;
+        align-items: stretch;
+        margin-bottom: 22px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(14px);
+      }
+
+      .hero-main {
+        padding: 28px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(99, 211, 255, 0.1);
+        border: 1px solid rgba(99, 211, 255, 0.2);
+        color: #c8f4ff;
+        font-size: 13px;
+        letter-spacing: 0.02em;
+      }
+
+      h1 {
+        margin: 16px 0 10px;
+        font-size: clamp(30px, 4vw, 48px);
+        line-height: 1.02;
+      }
+
+      .hero p,
+      .meta,
+      .hint {
+        color: var(--muted);
+      }
+
+      .hero p {
+        font-size: 17px;
+        line-height: 1.6;
+        max-width: 68ch;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      .stat {
+        padding: 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .stat strong {
+        display: block;
+        font-size: 24px;
+        margin-bottom: 4px;
+      }
+
+      .hero-side {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .meta {
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      button,
+      .button-link {
+        appearance: none;
+        border: none;
+        border-radius: 14px;
+        padding: 12px 16px;
+        font: inherit;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+        transition: transform 120ms ease, opacity 120ms ease, box-shadow 120ms ease;
+      }
+
+      button:hover,
+      .button-link:hover {
+        transform: translateY(-1px);
+      }
+
+      .button-primary {
+        background: linear-gradient(135deg, #39bfff 0%, #3f8cff 100%);
+        box-shadow: 0 10px 24px rgba(57, 191, 255, 0.24);
+      }
+
+      .button-secondary {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--text);
+      }
+
+      .diagram-shell {
+        padding: 18px;
+      }
+
+      .diagram-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 8px 16px;
+      }
+
+      .diagram-title {
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .pill {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .diagram-card {
+        position: relative;
+        min-height: 620px;
+        overflow: auto;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
+          linear-gradient(180deg, var(--bg-2), #08101f);
+      }
+
+      #diagram {
+        min-width: 0;
+        padding: 28px;
+      }
+
+      #diagram svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .hint {
+        margin-top: 14px;
+        font-size: 14px;
+      }
+
+      .error {
+        color: #ffb4b4;
+        padding: 20px;
+      }
+
+      @media (max-width: 920px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+
+        .stats {
+          grid-template-columns: 1fr;
+        }
+
+        #diagram {
+          min-width: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <div class="card hero-main">
+          <span class="eyebrow">⚡ GitHub Pages • Live Mermaid Viewer</span>
+          <h1>New Bitcoin App module diagram</h1>
+          <p>
+            This page renders <strong>diagram.mmd</strong> and keeps a stable URL, so the link can stay the same while the architecture evolves.
+            Push changes to GitHub, refresh this page, and you instantly get the newest diagram.
+          </p>
+
+          <div class="stats">
+            <div class="stat">
+              <strong>1 URL</strong>
+              <span class="meta">Share one permanent GitHub Pages link.</span>
+            </div>
+            <div class="stat">
+              <strong>1 file</strong>
+              <span class="meta">Update only <code>diagram.mmd</code> during our discussion.</span>
+            </div>
+            <div class="stat">
+              <strong>Auto-refresh</strong>
+              <span class="meta">The viewer polls for changes every 10 seconds.</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="card hero-side">
+          <div>
+            <div class="meta"><strong>Stable Pages URL</strong><br /><code>https://&lt;owner&gt;.github.io/new-bitcoin-app-diagram/</code></div>
+            <div class="meta" style="margin-top: 14px;"><strong>Source file</strong><br /><code>diagram.mmd</code></div>
+            <div class="meta" style="margin-top: 14px;"><strong>Deploy model</strong><br />Push to <code>main</code> → GitHub Actions publishes Pages.</div>
+          </div>
+
+          <div class="toolbar">
+            <button id="refreshBtn" class="button-primary">Refresh now</button>
+            <a class="button-link button-secondary" href="./diagram.mmd" target="_blank" rel="noreferrer">Open source</a>
+          </div>
+        </aside>
+      </section>
+
+      <section class="card diagram-shell">
+        <div class="diagram-head">
+          <div class="diagram-title">Architecture preview</div>
+          <div class="pills">
+            <span class="pill" id="statusPill">Loading diagram…</span>
+            <span class="pill" id="updatedPill">Waiting for first render…</span>
+          </div>
+        </div>
+
+        <div class="diagram-card">
+          <div id="diagram"></div>
+        </div>
+
+        <div class="hint">
+          Tip: keep this page open while we talk. I can keep updating <code>diagram.mmd</code>, and this viewer will re-render it without needing a new link.
+        </div>
+      </section>
+    </main>
+
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'loose',
+        theme: 'base',
+        themeVariables: {
+          background: '#08101f',
+          primaryColor: '#12351f',
+          primaryBorderColor: '#53d769',
+          primaryTextColor: '#f1fff5',
+          secondaryColor: '#0d294b',
+          secondaryBorderColor: '#5cc8ff',
+          tertiaryColor: '#3a2a0d',
+          tertiaryBorderColor: '#ffb84d',
+          lineColor: '#88aaf8',
+          fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif',
+          clusterBkg: '#0e1830',
+          clusterBorder: '#35507a',
+          edgeLabelBackground: '#0e1830',
+          mainBkg: '#0e1830'
+        },
+        flowchart: {
+          curve: 'basis',
+          useMaxWidth: false,
+          htmlLabels: true,
+          nodeSpacing: 40,
+          rankSpacing: 65,
+          padding: 24
+        }
+      });
+
+      const diagramEl = document.getElementById('diagram');
+      const statusPill = document.getElementById('statusPill');
+      const updatedPill = document.getElementById('updatedPill');
+      const refreshBtn = document.getElementById('refreshBtn');
+      let lastSource = '';
+
+      async function loadDiagram(force = false) {
+        statusPill.textContent = 'Checking for updates…';
+
+        try {
+          const response = await fetch(`./diagram.mmd?v=${Date.now()}`);
+          const source = await response.text();
+
+          if (!force && source === lastSource) {
+            statusPill.textContent = 'No changes detected';
+            return;
+          }
+
+          const id = `diagram-${Date.now()}`;
+          const { svg } = await mermaid.render(id, source);
+          diagramEl.innerHTML = svg;
+          lastSource = source;
+
+          statusPill.textContent = 'Diagram is up to date';
+          updatedPill.textContent = `Last render: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+        } catch (error) {
+          console.error(error);
+          statusPill.textContent = 'Render failed';
+          diagramEl.innerHTML = `<div class="error">Could not render diagram.<br /><br />${error.message}</div>`;
+        }
+      }
+
+      refreshBtn.addEventListener('click', () => loadDiagram(true));
+      loadDiagram(true);
+      setInterval(() => loadDiagram(false), 10000);
+    </script>
+  </body>
+</html>

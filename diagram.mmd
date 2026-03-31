@@ -1,0 +1,65 @@
+flowchart TB
+    subgraph Client[Client Layer]
+        direction LR
+        Web[🌐 Web App]
+        Mobile[📱 Mobile App]
+        Admin[🛠️ Admin Console]
+    end
+
+    subgraph Core[Core Platform]
+        direction LR
+        API[API Gateway]
+        Auth[Auth Module]
+        Wallet[Wallet Service]
+        Tx[Transaction Service]
+        Pricing[Pricing Engine]
+        Notify[Notification Service]
+        Worker[Background Worker]
+    end
+
+    subgraph Infra[Data & Integrations]
+        direction LR
+        PG[(PostgreSQL)]
+        Redis[(Redis Cache)]
+        Queue[[Event Queue]]
+        BTC[₿ Bitcoin Node]
+        KYC[🪪 KYC Provider]
+        FX[📈 Market Data API]
+        Mail[✉️ Email / SMS]
+    end
+
+    Web --> API
+    Mobile --> API
+    Admin --> API
+
+    API --> Auth
+    API --> Wallet
+    API --> Tx
+    API --> Pricing
+    API --> Notify
+
+    Auth --> PG
+    Wallet --> PG
+    Tx --> PG
+    API --> Redis
+
+    Wallet --> BTC
+    Auth --> KYC
+    Pricing --> FX
+    Notify --> Mail
+
+    Tx --> Queue
+    Notify --> Queue
+    Worker --> Queue
+    Worker --> BTC
+    Worker --> PG
+
+    classDef client fill:#0d294b,stroke:#5cc8ff,stroke-width:2px,color:#eef6ff;
+    classDef core fill:#12351f,stroke:#53d769,stroke-width:2px,color:#f1fff5;
+    classDef data fill:#3a2a0d,stroke:#ffb84d,stroke-width:2px,color:#fff8e8;
+    classDef ext fill:#3b1125,stroke:#ff6fae,stroke-width:2px,color:#fff0f7;
+
+    class Web,Mobile,Admin client;
+    class API,Auth,Wallet,Tx,Pricing,Notify,Worker core;
+    class PG,Redis,Queue data;
+    class BTC,KYC,FX,Mail ext;
